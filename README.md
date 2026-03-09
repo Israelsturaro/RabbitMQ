@@ -1,5 +1,10 @@
 # RabbitMQ Study - API Gateway + Worker
 
+![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js&logoColor=white)
+![NestJS](https://img.shields.io/badge/NestJS-Framework-E0234E?logo=nestjs&logoColor=white)
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-3.x-FF6600?logo=rabbitmq&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+
 Projeto de estudo com dois servicos NestJS:
 - `api-gateway`: recebe pedidos via HTTP e publica mensagens no RabbitMQ.
 - `worker-service`: consome mensagens da fila e processa os pedidos.
@@ -16,6 +21,18 @@ Infra de filas:
 - Fila principal: `pedido_queue`
 - Dead Letter Exchange: `pedido_dlx`
 - Dead Letter Queue: `pedido_dlq`
+
+## Diagrama de Mensageria
+
+```mermaid
+flowchart LR
+    A[Cliente HTTP] -->|POST /pedidos| B[api-gateway]
+    B -->|emit pedido.criado| C[(pedido_queue)]
+    C -->|consume| D[worker-service]
+    D -->|ack| C
+    D -->|nack requeue=false| E{{pedido_dlx}}
+    E --> F[(pedido_dlq)]
+```
 
 ## Pre-requisitos
 
